@@ -1,57 +1,43 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import StartScreen from './components/StartScreen';
 import GameCanvas from './components/GameCanvas';
 import EndScreen from './components/EndScreen';
 import Leaderboard from './components/Leaderboard';
 
-const appStyle = {
-  backgroundColor: '#000000',
-  color: '#FFFF00',
-  fontFamily: '"Courier New", Courier, monospace',
-  minHeight: '100vh',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '20px'
-};
-
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('start'); // 'start', 'playing', 'gameover', 'leaderboard'
+  const [screen, setScreen] = useState('start'); 
   const [playerName, setPlayerName] = useState('');
-  const [finalGameState, setFinalGameState] = useState(null);
+  const [finalState, setFinalState] = useState(null);
 
-  const startGame = (name) => {
+  const handleStart = (name) => {
     setPlayerName(name);
-    setCurrentScreen('playing');
-  };
-
-  const endGame = (gameState) => {
-    setFinalGameState(gameState);
-    setCurrentScreen('gameover');
+    setScreen('playing');
   };
 
   return (
-    <div style={appStyle}>
-      {currentScreen === 'start' && (
-        <StartScreen onStart={startGame} />
-      )}
+    <div className="app-container">
+      {screen === 'start' && <StartScreen onStart={handleStart} />}
       
-      {currentScreen === 'playing' && (
-        <GameCanvas onEnd={endGame} />
-      )}
-
-      {currentScreen === 'gameover' && (
-        <EndScreen 
-          gameState={finalGameState} 
-          playerName={playerName}
-          onRetry={() => setCurrentScreen('start')}
-          onViewLeaderboard={() => setCurrentScreen('leaderboard')}
+      {screen === 'playing' && (
+        <GameCanvas 
+          playerName={playerName} 
+          onEnd={(state) => {
+            setFinalState(state);
+            setScreen('gameover');
+          }} 
         />
       )}
-
-      {currentScreen === 'leaderboard' && (
-        <Leaderboard onBack={() => setCurrentScreen('start')} />
+      
+      {screen === 'gameover' && (
+        <EndScreen 
+          gameState={{ ...finalState, playerName }} 
+          onRetry={() => setScreen('playing')}
+          onLeaderboard={() => setScreen('leaderboard')}
+        />
+      )}
+      
+      {screen === 'leaderboard' && (
+        <Leaderboard onBack={() => setScreen('start')} />
       )}
     </div>
   );
