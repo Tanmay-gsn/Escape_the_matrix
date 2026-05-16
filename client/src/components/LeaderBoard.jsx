@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getTopScores } from '../api/scores'
 
-function Leaderboard({ onBack }) {
+export default function Leaderboard({ onBack }) {
   const [scores, setScores] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -64,54 +64,37 @@ function Leaderboard({ onBack }) {
     margin: '24px auto 0 auto',
   }
 
-  if (loading) return (
-    <div style={containerStyle}>
-      <p style={{ color: '#00ff41', textAlign: 'center', letterSpacing: '2px' }}>
-        LOADING...
-      </p>
-    </div>
-  )
-
-  if (error) return (
-    <div style={containerStyle}>
-      <p style={{ color: '#ff4141', textAlign: 'center', letterSpacing: '2px' }}>
-        ERROR: {error}
-      </p>
-      <button style={buttonStyle} onClick={onBack}>BACK</button>
-    </div>
-  )
-
   return (
-    <div style={containerStyle}>
-      <h2 style={titleStyle}>[ TOP 10 ]</h2>
+    <div style={{ maxWidth: '600px', margin: '50px auto', textAlign: 'center' }}>
+      <h1>Top 10 Escapes</h1>
 
-      <div style={headerRowStyle}>
-        <span style={rankStyle}>#</span>
-        <span style={{ flex: 2 }}>PLAYER</span>
-        <span>SCORE</span>
-        <span>LEVEL</span>
-        <span>TIME</span>
-      </div>
+      {loading && <p>Loading network data...</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
-      {scores.length === 0 && (
-        <p style={{ color: '#FFFF00', textAlign: 'center', marginTop: '16px' }}>
-          NO SCORES YET
-        </p>
+            {!loading && !error && (
+        <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid #333' }}>
+              <th style={{ padding: '10px' }}>Rank</th>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {scores.map((s, index) => (
+              <tr key={s._id} style={{ borderBottom: '1px solid #ccc' }}>
+                <td style={{ padding: '10px' }}>#{index + 1}</td>
+                <td>{s.playerName}</td>
+                <td>{s.score}</td>
+                <td>{s.timeTaken}s</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
-      {scores.map((s, i) => (
-        <div key={s._id} style={rowStyle}>
-          <span style={rankStyle}>#{i + 1}</span>
-          <span style={{ flex: 2 }}>{s.playerName}</span>
-          <span>{s.score}</span>
-          <span>{s.level}</span>
-          <span>{s.timeTaken}s</span>
-        </div>
-      ))}
-
-      <button style={buttonStyle} onClick={onBack}>BACK TO START</button>
+      <button onClick={onBack} style={{ marginTop: '30px', padding: '10px 20px' }}>Back to Start</button>
     </div>
   )
 }
-
-export default Leaderboard

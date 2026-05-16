@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { submitScore } from '../api/scores'
 
-function EndScreen({ gameState, playerName, onRetry, onViewLeaderboard }) {
+function EndScreen({ gameState, playerName, onRetry, onLeaderboard }) {
   const submitted = useRef(false)
 
   const score = gameState?.score ?? 0
@@ -30,9 +30,7 @@ function EndScreen({ gameState, playerName, onRetry, onViewLeaderboard }) {
 
   const titleStyle = {
     fontSize: '2rem',
-    color: status === 'won' ? '#00ff41' : '#ff4141',
-    marginBottom: '24px',
-    letterSpacing: '4px',
+    color: status === 'won' ? '#2ECC71' : '#E74C3C',
   }
 
   const statStyle = {
@@ -46,32 +44,23 @@ function EndScreen({ gameState, playerName, onRetry, onViewLeaderboard }) {
     color: '#00ff41',
   }
 
-  const buttonStyle = {
-    backgroundColor: 'transparent',
-    border: '1px solid #00ff41',
-    color: '#00ff41',
-    padding: '10px 28px',
-    margin: '10px 8px 0 8px',
-    fontSize: '1rem',
-    fontFamily: '"Courier New", monospace',
-    cursor: 'pointer',
-    letterSpacing: '2px',
-  }
-
   return (
-    <div style={containerStyle}>
-      <h2 style={titleStyle}>
-        {status === 'won' ? '[ YOU ESCAPED ]' : '[ GAME OVER ]'}
-      </h2>
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1 style={titleStyle}>
+        {status === 'won' ? 'You Escaped the Matrix!' : 'You Died.'}
+      </h1>
 
-      <p style={statStyle}><span style={labelStyle}>PLAYER :</span> {playerName}</p>
-      <p style={statStyle}><span style={labelStyle}>SCORE  :</span> {score}</p>
-      <p style={statStyle}><span style={labelStyle}>LEVEL  :</span> {level}</p>
-      <p style={statStyle}><span style={labelStyle}>TIME   :</span> {timeTaken}s</p>
+      <div className="stats" style={{ margin: '20px 0', fontSize: '1.2rem' }}>
+        <p>Level Reached: <strong>{gameState.level}</strong></p>
+        <p>Final Score: <strong>{gameState.score}</strong></p>
+        <p>Time Taken: <strong>{gameState.timeTaken} seconds</strong></p>
+      </div>
 
-      <div style={{ marginTop: '32px' }}>
-        <button style={buttonStyle} onClick={onRetry}>RETRY</button>
-        <button style={buttonStyle} onClick={onViewLeaderboard}>LEADERBOARD</button>
+      
+
+      <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' , gap: '15px'}}>
+        <button onClick={onRetry}>PLAY AGAIN</button>
+        <button onClick={onLeaderboard}>VIEW LEADERBOARD</button>
       </div>
     </div>
   )
