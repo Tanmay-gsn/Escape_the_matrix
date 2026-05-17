@@ -1,4 +1,17 @@
-import { drawGame } from "./renderer";
+import {
+  drawGrid,
+  drawPlayer,
+  drawMonster,
+  drawScore
+} from "./renderer.js";
+
+import { dijkstra } from "./pathfinding/dijkstra.js";
+
+import { astar } from "./pathfinding/astar.js";
+
+import {
+  movePredictor
+} from "./monsters/predictor.js";
 import { gameMap } from "./maps";
 
 import {
