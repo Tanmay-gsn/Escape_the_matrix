@@ -15,6 +15,10 @@ import {
 import { gameMap } from "./maps";
 
 import {
+  moveZoner
+} from "./monsters/zoner.js";
+
+import {
   stalker,
   moveStalker,
 } from "./monsters/stalker";
