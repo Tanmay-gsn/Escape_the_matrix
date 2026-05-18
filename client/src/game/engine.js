@@ -2,21 +2,16 @@ import {
   drawGrid,
   drawPlayer,
   drawMonster,
-  drawScore
 } from "./renderer.js";
 
 import { dijkstra } from "./pathfinding/dijkstra.js";
-
 import { astar } from "./pathfinding/astar.js";
 
-import {
-  movePredictor
-} from "./monsters/predictor.js";
+import { movePredictor } from "./monsters/predictor.js";
+
 import { gameMap } from "./maps";
 
-import {
-  moveZoner
-} from "./monsters/zoner.js";
+import { moveZoner } from "./monsters/zoner.js";
 
 import {
   stalker,
@@ -31,52 +26,76 @@ import {
 const tileSize = 80;
 
 const player = {
-  x: 0,
-  y: 0,
+  x: 4,
+  y: 4,
+  frozen: false,
+  frozenTurns: 0,
 };
 
 let lives = 3;
 let score = 0;
+let moves = 0;
+let level = 1;
 
-export function initGame() {
-  const canvas = document.getElementById("gameCanvas");
+const startTime = Date.now();
+
+let gameStatus = "playing";
+
+let stateChangeCallback = null;
+
+export function onStateChange(callback) {
+  stateChangeCallback = callback;
+}
+
+function sendState() {
+  if (stateChangeCallback) {
+    stateChangeCallback({
+      grid: gameMap,
+
+      player: {
+        ...player,
+      },
+
+      monsters: [
+        {
+          id: 1,
+          type: "stalker",
+          x: stalker.x,
+          y: stalker.y,
+        },
+        {
+          id: 2,
+          type: "drifter",
+          x: drifter.x,
+          y: drifter.y,
+        },
+      ],
+
+      score,
+      moves,
+      lives,
+      level,
+      status: gameStatus,
+      startTime,
+    });
+  }
+}
+
+export function init(canvasElement) {
+  const canvas = canvasElement;
 
   const ctx = canvas.getContext("2d");
 
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawGame(ctx);
+    drawGrid(ctx, gameMap);
 
-    // Player
-    ctx.fillStyle = "red";
+    drawPlayer(ctx, player, tileSize);
 
-    ctx.fillRect(
-      player.x * tileSize,
-      player.y * tileSize,
-      tileSize,
-      tileSize
-    );
+    drawMonster(ctx, stalker, "purple", tileSize);
 
-    // Stalker
-    ctx.fillStyle = "purple";
-
-    ctx.fillRect(
-      stalker.x * tileSize,
-      stalker.y * tileSize,
-      tileSize,
-      tileSize
-    );
-
-    // Drifter
-    ctx.fillStyle = "orange";
-
-    ctx.fillRect(
-      drifter.x * tileSize,
-      drifter.y * tileSize,
-      tileSize,
-      tileSize
-    );
+    drawMonster(ctx, drifter, "orange", tileSize);
 
     // HUD
     ctx.fillStyle = "black";
@@ -88,7 +107,14 @@ export function initGame() {
 
   render();
 
+  sendState();
+
   window.addEventListener("keydown", (event) => {
+
+    if (gameStatus !== "playing") {
+      return;
+    }
+
     let newX = player.x;
     let newY = player.y;
 
@@ -111,13 +137,15 @@ export function initGame() {
     // Prevent outside map and water
     if (
       newX >= 0 &&
-      newX < 8 &&
+      newX < gameMap[0].length &&
       newY >= 0 &&
-      newY < 8 &&
+      newY < gameMap.length &&
       gameMap[newY][newX] !== 1
     ) {
       player.x = newX;
       player.y = newY;
+
+      moves++;
 
       // Coin collection
       if (gameMap[newY][newX] === 4) {
@@ -129,6 +157,7 @@ export function initGame() {
 
     // Monster movement
     moveStalker(player, gameMap);
+
     moveDrifter(gameMap);
 
     // Collision with stalker
@@ -138,8 +167,8 @@ export function initGame() {
     ) {
       lives--;
 
-      player.x = 0;
-      player.y = 0;
+      player.x = 4;
+      player.y = 4;
 
       alert("Stalker caught you!");
     }
@@ -151,31 +180,28 @@ export function initGame() {
     ) {
       lives--;
 
-      player.x = 0;
-      player.y = 0;
+      player.x = 4;
+      player.y = 4;
 
       alert("Drifter caught you!");
     }
 
     // Win condition
     if (gameMap[player.y][player.x] === 3) {
-      alert("You Win!");
+      gameStatus = "won";
 
-      player.x = 0;
-      player.y = 0;
+      alert("You Win!");
     }
 
     // Game over
     if (lives <= 0) {
+      gameStatus = "lost";
+
       alert("Game Over");
-
-      lives = 3;
-      score = 0;
-
-      player.x = 0;
-      player.y = 0;
     }
 
     render();
+
+    sendState();
   });
 }
