@@ -91,18 +91,11 @@ export function init(canvasElement) {
 
     drawGrid(ctx, gameMap);
 
-    drawPlayer(ctx, player, tileSize);
+    drawPlayer(ctx, player, 40);
 
-    drawMonster(ctx, stalker, "purple", tileSize);
+    drawMonster(ctx, stalker, "purple", 40);
 
-    drawMonster(ctx, drifter, "orange", tileSize);
-
-    // HUD
-    ctx.fillStyle = "black";
-    ctx.font = "24px Arial";
-
-    ctx.fillText("Lives: " + lives, 10, 30);
-    ctx.fillText("Score: " + score, 10, 60);
+    drawMonster(ctx, drifter, "orange", 40);
   }
 
   render();

@@ -47,30 +47,29 @@ export function drawGrid(ctx, grid) {
   }
 }
 
-export function drawPlayer(ctx, player) {
+export function drawPlayer(ctx, player, tileSize) {
 
-  ctx.fillStyle = "yellow";
+  ctx.fillStyle = "lime";
 
   ctx.fillRect(
-    player.x * TILE_SIZE,
-    player.y * TILE_SIZE,
-    TILE_SIZE,
-    TILE_SIZE
+    player.x * tileSize,
+    player.y * tileSize,
+    tileSize,
+    tileSize
   );
 }
 
-export function drawMonster(ctx, monster) {
+export function drawMonster(ctx, monster, color, tileSize) {
 
-  ctx.fillStyle = "red";
+  ctx.fillStyle = color;
 
   ctx.fillRect(
-    monster.x * TILE_SIZE,
-    monster.y * TILE_SIZE,
-    TILE_SIZE,
-    TILE_SIZE
+    monster.x * tileSize,
+    monster.y * tileSize,
+    tileSize,
+    tileSize
   );
 }
-
 export function drawScore(ctx, score) {
 
   ctx.fillStyle = "black";

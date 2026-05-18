@@ -1,8 +1,8 @@
 import { bfs } from "../pathfinding/bfs";
 
 export const stalker = {
-  x: 7,
-  y: 7,
+  x: 2,
+  y: 2,
 };
 
 export function moveStalker(player, map) {

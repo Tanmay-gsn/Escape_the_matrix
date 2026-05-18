@@ -1,6 +1,6 @@
 export const drifter = {
-    x: 4,
-    y: 4,
+    x: 17,
+    y: 12,
   };
   
   export function moveDrifter(map) {
