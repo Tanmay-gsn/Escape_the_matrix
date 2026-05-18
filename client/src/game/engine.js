@@ -7,11 +7,11 @@ import {
 import { dijkstra } from "./pathfinding/dijkstra.js";
 import { astar } from "./pathfinding/astar.js";
 
-import { movePredictor } from "./monsters/predictor.js";
+import { predictor,movePredictor } from "./monsters/predictor.js";
 
 import { gameMap } from "./maps";
 
-import { moveZoner } from "./monsters/zoner.js";
+import { zoner,moveZoner } from "./monsters/zoner.js";
 
 import {
   stalker,
@@ -96,6 +96,10 @@ export function init(canvasElement) {
     drawMonster(ctx, stalker, "purple", 40);
 
     drawMonster(ctx, drifter, "orange", 40);
+
+    drawMonster(ctx, predictor, "#00ffff", 40);
+
+    drawMonster(ctx, zoner, "#ff1493", 40);
   }
 
   render();

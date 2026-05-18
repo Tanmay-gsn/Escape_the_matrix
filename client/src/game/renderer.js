@@ -8,34 +8,71 @@ export function drawGrid(ctx, grid) {
 
       const tile = grid[row][col];
 
+      // FLOOR
       if (tile === 0) {
-        ctx.fillStyle = "lightgray";
+        ctx.fillStyle = "#ffffff";
       }
 
+      // WATER
       else if (tile === 1) {
-        ctx.fillStyle = "skyblue";
+        ctx.fillStyle = "#0000ff";
       }
 
+      // MOUNTAIN
       else if (tile === 2) {
-        ctx.fillStyle = "brown";
+        ctx.fillStyle = "#ff0000";
       }
 
+      // EXIT
       else if (tile === 3) {
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "#00ff00";
       }
 
+      // COIN
       else if (tile === 4) {
-        ctx.fillStyle = "gold";
+        ctx.fillStyle = "#ffff00";
       }
 
-      ctx.fillRect(
-        col * TILE_SIZE,
-        row * TILE_SIZE,
-        TILE_SIZE,
-        TILE_SIZE
-      );
+      if (tile === 4) {
 
-      ctx.strokeStyle = "black";
+        // Draw floor behind coin
+        ctx.fillStyle = "#ffffff";
+      
+        ctx.fillRect(
+          col * TILE_SIZE,
+          row * TILE_SIZE,
+          TILE_SIZE,
+          TILE_SIZE
+        );
+      
+        // Draw circular coin
+        ctx.fillStyle = "#ffff00";
+      
+        ctx.beginPath();
+      
+        ctx.arc(
+          col * TILE_SIZE + TILE_SIZE / 2,
+          row * TILE_SIZE + TILE_SIZE / 2,
+          TILE_SIZE / 4,
+          0,
+          Math.PI * 2
+        );
+      
+        ctx.fill();
+      }
+      
+      else {
+      
+        ctx.fillRect(
+          col * TILE_SIZE,
+          row * TILE_SIZE,
+          TILE_SIZE,
+          TILE_SIZE
+        );
+      }
+
+      // Grid Border
+      ctx.strokeStyle = "#000000";
 
       ctx.strokeRect(
         col * TILE_SIZE,
@@ -47,9 +84,10 @@ export function drawGrid(ctx, grid) {
   }
 }
 
+// PLAYER
 export function drawPlayer(ctx, player, tileSize) {
 
-  ctx.fillStyle = "lime";
+  ctx.fillStyle = "#ff00ff";
 
   ctx.fillRect(
     player.x * tileSize,
@@ -59,6 +97,7 @@ export function drawPlayer(ctx, player, tileSize) {
   );
 }
 
+// MONSTERS
 export function drawMonster(ctx, monster, color, tileSize) {
 
   ctx.fillStyle = color;
@@ -70,9 +109,11 @@ export function drawMonster(ctx, monster, color, tileSize) {
     tileSize
   );
 }
+
+// SCORE
 export function drawScore(ctx, score) {
 
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "#000000";
 
   ctx.font = "24px Arial";
 

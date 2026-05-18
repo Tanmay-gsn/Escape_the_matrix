@@ -1,5 +1,10 @@
 import { astar } from "../pathfinding/astar.js";
 
+export const predictor = {
+  x: 10,
+  y: 2,
+};
+
 export function movePredictor(
   monster,
   player,
