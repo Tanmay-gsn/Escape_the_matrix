@@ -6,7 +6,7 @@ import Leaderboard from './components/Leaderboard';
 
 function App() {
   const [screen, setScreen] = useState('start'); 
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState("");
   const [finalState, setFinalState] = useState(null);
 
   const handleStart = (name) => {
@@ -30,6 +30,7 @@ function App() {
       
       {screen === 'gameover' && (
         <EndScreen 
+          playerName={playerName}
           gameState={{ ...finalState, playerName }} 
           onRetry={() => setScreen('playing')}
           onLeaderboard={() => setScreen('leaderboard')}

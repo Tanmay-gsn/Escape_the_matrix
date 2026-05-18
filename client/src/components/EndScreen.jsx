@@ -14,7 +14,7 @@ function EndScreen({ gameState, playerName, onRetry, onLeaderboard }) {
   useEffect(() => {
     if (submitted.current) return
     submitted.current = true
-    submitScore(playerName, score, level, timeTaken)
+    submitScore( playerName, score, level, timeTaken)
       .then(() => console.log('Score submitted'))
       .catch((err) => console.error('Submit failed:', err))
   }, [])
