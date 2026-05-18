@@ -1,7 +1,7 @@
-const BASE_URL = 'https://escape-the-matrix-4h02.onrender.com';
+const BASE_URL = 'https://escape-the-matrix-4h02.onrender.com/api/scores';
 
 export async function getTopScores() {
-  const response = await fetch(`${BASE_URL}/scores`);
+  const response = await fetch(`${BASE_URL}`);
   const data = await response.json();
   
   if (!response.ok || !data.scores) {
@@ -12,7 +12,7 @@ export async function getTopScores() {
 }
 
 export async function submitScore(playerName, score, level, timeTaken) {
-  const response = await fetch(`${BASE_URL}/scores`, {
+  const response = await fetch(`${BASE_URL}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
