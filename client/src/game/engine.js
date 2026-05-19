@@ -165,6 +165,7 @@ function getWanderMove(monster, state) {
 function finalizeTurn() {
   if (state.status === 'won') {
     state.moves++;
+    state.timeTaken = Math.floor((Date.now()- state.startTime)/1000);
     drawGame(ctx, state);
     if (notifyReact) notifyReact({ ...state });
     return;
@@ -210,6 +211,10 @@ function finalizeTurn() {
       state.player.frozen = false;
       state.player.frozenTurns = 0;
     }
+  }
+
+  if (state.status === 'lost' || state.status === 'won') {
+    state.timeTaken = Math.floor((Date.now() - state.startTime) / 1000);
   }
 
   state.moves++;

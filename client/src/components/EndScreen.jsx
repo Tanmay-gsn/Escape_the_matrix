@@ -7,9 +7,7 @@ function EndScreen({ gameState, playerName, onRetry, onLeaderboard }) {
   const score = gameState?.score ?? 0
   const level = gameState?.level ?? 1
   const status = gameState?.status ?? 'lost'
-  const timeTaken = gameState?.startTime
-    ? Math.floor((Date.now() - gameState.startTime) / 1000)
-    : 0
+  const timeTaken = gameState?.timeTaken ?? 0
 
   useEffect(() => {
     if (submitted.current) return
