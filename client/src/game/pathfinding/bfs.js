@@ -1,49 +1,49 @@
-export function bfs(start, end, map) {
-    const queue = [[start]];
-    const visited = new Set();
-  
-    while (queue.length > 0) {
-      const path = queue.shift();
-  
-      const current = path[path.length - 1];
-  
-      const key = `${current.x},${current.y}`;
-  
-      if (visited.has(key)) {
-        continue;
+// bfs.js
+export function bfs(grid, start, goal) {
+  const queue = [start];
+  const visited = new Set();
+  const parentMap = new Map();
+
+  const startKey = `${start.x},${start.y}`;
+  visited.add(startKey);
+
+  const directions = [
+    { dx: 0, dy: -1 },
+    { dx: 0, dy: 1 },
+    { dx: -1, dy: 0 },
+    { dx: 1, dy: 0 }
+  ];
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+
+    if (current.x === goal.x && current.y === goal.y) {
+      const path = [];
+      let currStr = `${goal.x},${goal.y}`;
+      while (currStr !== startKey) {
+        const node = parentMap.get(currStr);
+        const [cx, cy] = currStr.split(',').map(Number);
+        path.unshift({ x: cx, y: cy });
+        currStr = `${node.x},${node.y}`;
       }
-  
-      visited.add(key);
-  
-      if (current.x === end.x && current.y === end.y) {
-        return path;
-      }
-  
-      const directions = [
-        { x: 0, y: -1 },
-        { x: 0, y: 1 },
-        { x: -1, y: 0 },
-        { x: 1, y: 0 },
-      ];
-  
-      for (const dir of directions) {
-        const newX = current.x + dir.x;
-        const newY = current.y + dir.y;
-  
-        if (
-          newX >= 0 &&
-          newX < map[0].length &&
-          newY >= 0 &&
-          newY < map.length &&
-          map[newY][newX] !== 1
-        ) {
-          queue.push([
-            ...path,
-            { x: newX, y: newY },
-          ]);
+      return path;
+    }
+
+    for (const dir of directions) {
+      const nx = current.x + dir.dx;
+      const ny = current.y + dir.dy;
+      const key = `${nx},${ny}`;
+
+      if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length) {
+        const cellValue = grid[ny][nx];
+        if (cellValue !== 1 && !visited.has(key)) {
+          visited.add(key);
+          parentMap.set(key, current);
+          queue.push({ x: nx, y: ny });
         }
       }
     }
-  
-    return [];
   }
+  
+  return null; 
+}

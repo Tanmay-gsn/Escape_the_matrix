@@ -1,43 +1,52 @@
-export const zoner = {
-  x: 16,
-  y: 10,
-};
+import { dijkstra } from '../pathfinding/dijkstra';
 
-export function moveZoner(
-  monster,
-  player,
-  map
-) {
+export function computeNextMove(monsterState, gameState) {
+  const { grid, player, monsters } = gameState;
+  const junctions = [];
 
-  const zoneRadius = 3;
+  for (let y = 1; y < grid.length - 1; y++) {
+    for (let x = 1; x < grid[0].length - 1; x++) {
+      if (grid[y][x] !== 1) { // Not water
+        let walkableNeighbors = 0;
+        if (grid[y-1][x] !== 1) walkableNeighbors++;
+        if (grid[y+1][x] !== 1) walkableNeighbors++;
+        if (grid[y][x-1] !== 1) walkableNeighbors++;
+        if (grid[y][x+1] !== 1) walkableNeighbors++;
 
-  const dx =
-    Math.abs(player.x - monster.x);
-
-  const dy =
-    Math.abs(player.y - monster.y);
-
-  const insideZone =
-    dx <= zoneRadius &&
-    dy <= zoneRadius;
-
-  if (!insideZone) {
-    return;
+        if (walkableNeighbors >= 3) {
+          junctions.push({ x, y });
+        }
+      }
+    }
   }
 
-  if (monster.x < player.x) {
-    monster.x++;
+  if (junctions.length === 0) return null;
+
+  let bestJunction = null;
+  let minPlayerDist = Infinity;
+
+  junctions.forEach(j => {
+    const distToPlayer = Math.abs(j.x - player.x) + Math.abs(j.y - player.y);
+    if (distToPlayer < minPlayerDist && distToPlayer > 0) {
+      minPlayerDist = distToPlayer;
+      bestJunction = j;
+    }
+  });
+
+  const distToZoner = Math.abs(bestJunction.x - monsterState.x) + Math.abs(bestJunction.y - monsterState.y);
+  if (distToZoner === 0 && minPlayerDist > 3) {
+    return null; 
   }
 
-  else if (monster.x > player.x) {
-    monster.x--;
+  const path = dijkstra(grid, monsterState, bestJunction);
+
+  if (path && path.length > 0) {
+    const nextStep = path[0];
+    const isOccupied = monsters.some(
+      m => m.id !== monsterState.id && m.x === nextStep.x && m.y === nextStep.y
+    );
+    if (!isOccupied) return nextStep;
   }
 
-  if (monster.y < player.y) {
-    monster.y++;
-  }
-
-  else if (monster.y > player.y) {
-    monster.y--;
-  }
+  return null;
 }

@@ -1,204 +1,218 @@
-import {
-  drawGrid,
-  drawPlayer,
-  drawMonster,
-} from "./renderer.js";
+import { level1, level2 } from './maps';
+import { drawGame } from './renderer';
+import { computeNextMove as stalkerMove } from './monsters/stalker';
+import { computeNextMove as drifterMove } from './monsters/drifter';
+import { computeNextMove as predictorMove } from './monsters/predictor';
+import { computeNextMove as zonerMove } from './monsters/zoner';
 
-import { dijkstra } from "./pathfinding/dijkstra.js";
-import { astar } from "./pathfinding/astar.js";
+let ctx;
+let notifyReact;
 
-import { predictor,movePredictor } from "./monsters/predictor.js";
-
-import { gameMap } from "./maps";
-
-import { zoner,moveZoner } from "./monsters/zoner.js";
-
-import {
-  stalker,
-  moveStalker,
-} from "./monsters/stalker";
-
-import {
-  drifter,
-  moveDrifter,
-} from "./monsters/drifter";
-
-const tileSize = 80;
-
-const player = {
-  x: 4,
-  y: 4,
-  frozen: false,
-  frozenTurns: 0,
+let state = {
+  grid: level1,
+  player: { x: 10, y: 7, frozen: false, frozenTurns: 0 },
+  monsters: [
+    { id: 1, type: 'stalker', x: 2, y: 2 },
+    { id: 2, type: 'drifter', x: 17, y: 12 },
+    { id: 3, type: 'predictor', x: 2, y: 12 },
+    { id: 4, type: 'zoner', x: 17, y: 2 }
+  ],
+  score: 0,
+  moves: 0,
+  lives: 3,
+  level: 1,
+  status: 'playing',
+  startTime: Date.now(),
+  previousPlayerPos: { x: 10, y: 7 }
 };
 
-let lives = 3;
-let score = 0;
-let moves = 0;
-let level = 1;
+export function init(canvasElement) {
+  state.grid = JSON.parse(JSON.stringify(level1));
+  
+  state.status = 'playing';
+  state.lives = 3;
+  state.score = 0;
+  state.moves = 0;
+  state.startTime = Date.now();
+  
+  state.player = { x: 10, y: 7, frozen: false, frozenTurns: 0 };
+  state.previousPlayerPos = { x: 10, y: 7 };
+  state.monsters = [
+    { id: 1, type: 'stalker', x: 2, y: 2 },
+    { id: 2, type: 'drifter', x: 17, y: 12 },
+    { id: 3, type: 'predictor', x: 2, y: 12 },
+    { id: 4, type: 'zoner', x: 17, y: 2 }
+  ];
 
-const startTime = Date.now();
+  ctx = canvasElement.getContext('2d');
+  drawGame(ctx, state);
 
-let gameStatus = "playing";
-
-let stateChangeCallback = null;
+  window.onkeydown = (e) => {
+    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+    handleInput(e);
+  };
+}
 
 export function onStateChange(callback) {
-  stateChangeCallback = callback;
+  notifyReact = callback;
+  notifyReact({ ...state }); 
 }
 
-function sendState() {
-  if (stateChangeCallback) {
-    stateChangeCallback({
-      grid: gameMap,
+function handleInput(e) {
+  if (state.status !== 'playing') return;
 
-      player: {
-        ...player,
-      },
+  let dx = 0;
+  let dy = 0;
 
-      monsters: [
-        {
-          id: 1,
-          type: "stalker",
-          x: stalker.x,
-          y: stalker.y,
-        },
-        {
-          id: 2,
-          type: "drifter",
-          x: drifter.x,
-          y: drifter.y,
-        },
-      ],
+  if (e.key === 'ArrowUp' || e.key === 'w') dy = -1;
+  else if (e.key === 'ArrowDown' || e.key === 's') dy = 1;
+  else if (e.key === 'ArrowLeft' || e.key === 'a') dx = -1;
+  else if (e.key === 'ArrowRight' || e.key === 'd') dx = 1;
+  else return;
 
-      score,
-      moves,
-      lives,
-      level,
-      status: gameStatus,
-      startTime,
-    });
-  }
+  e.preventDefault(); 
+  resolveTurn(dx, dy);
 }
 
-export function init(canvasElement) {
-  const canvas = canvasElement;
-
-  const ctx = canvas.getContext("2d");
-
-  function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    drawGrid(ctx, gameMap);
-
-    drawPlayer(ctx, player, 40);
-
-    drawMonster(ctx, stalker, "purple", 40);
-
-    drawMonster(ctx, drifter, "orange", 40);
-
-    drawMonster(ctx, predictor, "#00ffff", 40);
-
-    drawMonster(ctx, zoner, "#ff1493", 40);
+function resolveTurn(dx, dy) {
+  if (state.player.frozen) {
+    state.player.frozenTurns--;
+    if (state.player.frozenTurns <= 0) {
+      state.player.frozen = false;
+    }
+    finalizeTurn();
+    return;
   }
 
-  render();
+  let nx = state.player.x + dx;
+  let ny = state.player.y + dy;
 
-  sendState();
+  if (nx < 0 || nx >= state.grid[0].length || ny < 0 || ny >= state.grid.length) {
+    return;
+  }
 
-  window.addEventListener("keydown", (event) => {
+  let targetCell = state.grid[ny][nx];
 
-    if (gameStatus !== "playing") {
-      return;
+  if (targetCell === 1) {
+    return; 
+  }
+
+  state.previousPlayerPos = { x: state.player.x, y: state.player.y };
+  state.player.x = nx;
+  state.player.y = ny;
+
+  if (targetCell === 2) {
+    state.player.frozen = true;
+    state.player.frozenTurns = 1;
+  }
+
+  if (targetCell === 4) {
+    state.score += 50;
+    state.grid[ny][nx] = 0; 
+  }
+
+  if (targetCell === 3) {
+    if (state.level === 1) {
+      // Transition to Level 2
+      state.level = 2;
+      state.score += 100;
+      state.grid = JSON.parse(JSON.stringify(level2));
+      
+      state.player.x = 2;
+      state.player.y = 7;
+      state.previousPlayerPos = { x: 2, y: 7 };
+      state.player.frozen = false;
+      state.player.frozenTurns = 0;
+      
+      state.monsters = [
+        { id: 1, type: 'stalker', x: 10, y: 2 },
+        { id: 2, type: 'drifter', x: 17, y: 12 },
+        { id: 3, type: 'predictor', x: 12, y: 7 },
+        { id: 4, type: 'zoner', x: 16, y: 7 }
+      ];
+    } else {
+      state.status = 'won';
     }
+  }
 
-    let newX = player.x;
-    let newY = player.y;
+  finalizeTurn();
+}
 
-    if (event.key === "ArrowUp") {
-      newY--;
-    }
-
-    if (event.key === "ArrowDown") {
-      newY++;
-    }
-
-    if (event.key === "ArrowLeft") {
-      newX--;
-    }
-
-    if (event.key === "ArrowRight") {
-      newX++;
-    }
-
-    // Prevent outside map and water
-    if (
-      newX >= 0 &&
-      newX < gameMap[0].length &&
-      newY >= 0 &&
-      newY < gameMap.length &&
-      gameMap[newY][newX] !== 1
-    ) {
-      player.x = newX;
-      player.y = newY;
-
-      moves++;
-
-      // Coin collection
-      if (gameMap[newY][newX] === 4) {
-        score += 10;
-
-        gameMap[newY][newX] = 0;
+function getWanderMove(monster, state) {
+  const directions = [
+    { dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
+  ];
+  const valid = [];
+  
+  for (let d of directions) {
+    const nx = monster.x + d.dx;
+    const ny = monster.y + d.dy;
+    
+    if (ny >= 0 && ny < state.grid.length && nx >= 0 && nx < state.grid[0].length) {
+      if (state.grid[ny][nx] !== 1) {
+        const isOccupied = state.monsters.some(m => m.id !== monster.id && m.x === nx && m.y === ny);
+        if (!isOccupied) valid.push({ x: nx, y: ny });
       }
     }
+  }
+  
+  if (valid.length === 0) return null;
+  return valid[Math.floor(Math.random() * valid.length)];
+}
 
-    // Monster movement
-    moveStalker(player, gameMap);
+function finalizeTurn() {
+  if (state.status === 'won') {
+    state.moves++;
+    drawGame(ctx, state);
+    if (notifyReact) notifyReact({ ...state });
+    return;
+  }
 
-    moveDrifter(gameMap);
+  for (let monster of state.monsters) {
+    if (Math.random() < 0.10) continue;
 
-    // Collision with stalker
-    if (
-      player.x === stalker.x &&
-      player.y === stalker.y
-    ) {
-      lives--;
+    const distToPlayer = Math.abs(monster.x - state.player.x) + Math.abs(monster.y - state.player.y);
 
-      player.x = 4;
-      player.y = 4;
+    let nextStep = null;
 
-      alert("Stalker caught you!");
+    if (distToPlayer > 8) {
+      nextStep = getWanderMove(monster, state);
+    } else {
+      if (monster.type === 'stalker') nextStep = stalkerMove(monster, state);
+      else if (monster.type === 'drifter') nextStep = drifterMove(monster, state);
+      else if (monster.type === 'predictor') nextStep = predictorMove(monster, state);
+      else if (monster.type === 'zoner') nextStep = zonerMove(monster, state);
     }
 
-    // Collision with drifter
-    if (
-      player.x === drifter.x &&
-      player.y === drifter.y
-    ) {
-      lives--;
-
-      player.x = 4;
-      player.y = 4;
-
-      alert("Drifter caught you!");
+    if (nextStep) {
+      monster.x = nextStep.x;
+      monster.y = nextStep.y;
     }
+  }
 
-    // Win condition
-    if (gameMap[player.y][player.x] === 3) {
-      gameStatus = "won";
-
-      alert("You Win!");
+  let collision = false;
+  for (let monster of state.monsters) {
+    if (monster.x === state.player.x && monster.y === state.player.y) {
+      collision = true;
+      break;
     }
+  }
 
-    // Game over
-    if (lives <= 0) {
-      gameStatus = "lost";
-
-      alert("Game Over");
+  if (collision) {
+    state.lives--;
+    if (state.lives <= 0) {
+      state.status = 'lost';
+    } else {
+      state.player.x = 10;
+      state.player.y = 7;
+      state.player.frozen = false;
+      state.player.frozenTurns = 0;
     }
+  }
 
-    render();
-
-    sendState();
-  });
+  state.moves++;
+  drawGame(ctx, state);
+  if (notifyReact) notifyReact({ ...state });
 }
