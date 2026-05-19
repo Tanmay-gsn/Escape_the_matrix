@@ -42,23 +42,24 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 ### 1. Clone the Repository using terminal
 
 ````bash
-git clone https://github.com/shreyas2006-astro/Escape-the-matrix.git
-cd escape-the-matrix
-cd client
-npm install
-npm run dev
-Open http://localhost:XXXX that spined up in your terminal and enter the matrix !
+1.   git clone https://github.com/shreyas2006-astro/Escape-the-matrix.git
+2.   cd escape-the-matrix
+3.   cd client
+4.   npm install
+5.   npm run dev
+6.   Open http://localhost:XXXX that spined up in your terminal and enter the matrix !
 ````
 ### 2. Clone the Repository using Github Desktop
 ```github desktop
 
-open github desktop, add new repo
-paste https://github.com/shreyas2006-astro/Escape-the-matrix.git this link in url section and clone.
-open in visual code studio (or any editor)
-open terminal inside vs code and run the following commands
-1. cd client
-2. npm install
-3. npm run dev
+1. Open github desktop
+2. Add new repo
+3. Paste [https://github.com/shreyas2006-astro/Escape-the-matrix.git] this link in url section and clone it.
+4. Open the repo in visual code studio (or any editor)
+5. Open terminal inside vs code and run the following commands
+   1. cd client
+   2. npm install
+   3. npm run dev
 
 Follow link and enter the matrix !
 ````
