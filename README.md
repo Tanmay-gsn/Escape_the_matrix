@@ -48,7 +48,7 @@ cd client
 npm install
 npm run dev
 Open http://localhost:XXXX that spined up in your browser and enter the matrix !
-
+````
 ### 2. Clone the Repository using Github Desktop
 ```github desktop
 
