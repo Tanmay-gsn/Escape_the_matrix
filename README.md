@@ -47,7 +47,7 @@ cd escape-the-matrix
 cd client
 npm install
 npm run dev
-Open http://localhost:XXXX that spined up in your browser and enter the matrix !
+Open http://localhost:XXXX that spined up in your terminal and enter the matrix !
 ````
 ### 2. Clone the Repository using Github Desktop
 ```github desktop
@@ -60,5 +60,5 @@ open terminal inside vs code and run the following commands
 2. npm install
 3. npm run dev
 
-click follow link and enter the matrix !
+Follow link and enter the matrix !
 ````
