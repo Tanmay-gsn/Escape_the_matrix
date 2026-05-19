@@ -1,113 +1,65 @@
-export function getTerrainCost(tile) {
+// dijkstra.js
 
-  if (tile === 1) return 5;
+export function dijkstra(grid, start, goal) {
+  const pq = [{ x: start.x, y: start.y, cost: 0 }];
+  const costs = new Map();
+  const parentMap = new Map();
 
-  if (tile === 2) return 999;
-
-  return 1;
-}
-
-export function getNeighbors(x, y, grid) {
-
-  const neighbors = [];
+  const startKey = `${start.x},${start.y}`;
+  costs.set(startKey, 0);
 
   const directions = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1]
+    { dx: 0, dy: -1 },
+    { dx: 0, dy: 1 },
+    { dx: -1, dy: 0 },
+    { dx: 1, dy: 0 }
   ];
 
-  for (const [dx, dy] of directions) {
+  function getWeight(cellValue) {
+    if (cellValue === 1) return Infinity; 
+    if (cellValue === 2) return 2;       
+    return 1;                            
+  }
 
-    const newX = x + dx;
-    const newY = y + dy;
+  while (pq.length > 0) {
+    pq.sort((a, b) => a.cost - b.cost);
+    const current = pq.shift();
+    const currKey = `${current.x},${current.y}`;
 
-    if (
-      newX >= 0 &&
-      newY >= 0 &&
-      newY < grid.length &&
-      newX < grid[0].length
-    ) {
+    if (current.x === goal.x && current.y === goal.y) {
+      const path = [];
+      let traceKey = `${goal.x},${goal.y}`;
+      while (traceKey !== startKey) {
+        const p = parentMap.get(traceKey);
+        const [cx, cy] = traceKey.split(',').map(Number);
+        path.unshift({ x: cx, y: cy });
+        traceKey = `${p.x},${p.y}`;
+      }
+      return path;
+    }
 
-      if (grid[newY][newX] !== 2) {
+    if (current.cost > costs.get(currKey)) continue;
 
-        neighbors.push({
-          x: newX,
-          y: newY
-        });
+    for (const dir of directions) {
+      const nx = current.x + dir.dx;
+      const ny = current.y + dir.dy;
+      const nKey = `${nx},${ny}`;
+
+      if (ny >= 0 && ny < grid.length && nx >= 0 && nx < grid[0].length) {
+        const cellValue = grid[ny][nx];
+        const weight = getWeight(cellValue);
+        
+        if (weight === Infinity) continue; 
+
+        const newCost = current.cost + weight;
+        
+        if (!costs.has(nKey) || newCost < costs.get(nKey)) {
+          costs.set(nKey, newCost);
+          parentMap.set(nKey, current);
+          pq.push({ x: nx, y: ny, cost: newCost });
+        }
       }
     }
   }
-
-  return neighbors;
-}
-
-export function dijkstra(grid, start, goal) {
-
-  const visited = new Set();
-
-  const queue = [];
-
-  queue.push({
-    x: start.x,
-    y: start.y,
-    cost: 0,
-    path: []
-  });
-
-  while (queue.length > 0) {
-
-    queue.sort((a, b) => a.cost - b.cost);
-
-    const current = queue.shift();
-
-    const key =
-      `${current.x},${current.y}`;
-
-    if (visited.has(key)) {
-      continue;
-    }
-
-    visited.add(key);
-
-    if (
-      current.x === goal.x &&
-      current.y === goal.y
-    ) {
-
-      return current.path;
-    }
-
-    const neighbors =
-      getNeighbors(
-        current.x,
-        current.y,
-        grid
-      );
-
-    for (const neighbor of neighbors) {
-
-      const terrainCost =
-        getTerrainCost(
-          grid[neighbor.y][neighbor.x]
-        );
-
-      queue.push({
-        x: neighbor.x,
-        y: neighbor.y,
-        cost:
-          current.cost + terrainCost,
-        path: [
-          ...current.path,
-          {
-            x: neighbor.x,
-            y: neighbor.y
-          }
-        ]
-      });
-    }
-  }
-
-  return [];
+  return null;
 }

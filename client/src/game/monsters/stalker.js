@@ -1,19 +1,22 @@
-import { bfs } from "../pathfinding/bfs";
+import { dijkstra } from '../pathfinding/dijkstra';
+import { bfs } from '../pathfinding/bfs';
 
-export const stalker = {
-  x: 2,
-  y: 2,
-};
+export function computeNextMove(monsterState, gameState) {
+  const useDijkstra = Math.random() < 0.7;
+  
+  const path = useDijkstra 
+    ? dijkstra(gameState.grid, monsterState, gameState.player)
+    : bfs(gameState.grid, monsterState, gameState.player);
 
-export function moveStalker(player, map) {
-  const path = bfs(
-    { x: stalker.x, y: stalker.y },
-    { x: player.x, y: player.y },
-    map
-  );
-
-  if (path.length > 1) {
-    stalker.x = path[1].x;
-    stalker.y = path[1].y;
+  if (path && path.length > 0) {
+    const nextStep = path[0];
+    
+    const isOccupied = gameState.monsters.some(
+      m => m.id !== monsterState.id && m.x === nextStep.x && m.y === nextStep.y
+    );
+    
+    if (!isOccupied) return nextStep;
   }
+  
+  return null; 
 }

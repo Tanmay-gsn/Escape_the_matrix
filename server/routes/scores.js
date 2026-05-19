@@ -16,6 +16,7 @@ router.get("/",async (req,res) => {
 })
 
 router.post("/",validateScore,async (req,res) => {
+    console.log("Incoming request body:", req.body);
     try{
         let {playerName, score, level, timeTaken} = req.body;
         const newDoc = await Score.create({playerName, score, level, timeTaken});
