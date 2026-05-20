@@ -17,6 +17,8 @@ for(let y = 0; y < rows; y++) {
 map[5][5] = 1; map[5][6] = 1;
 map[8][10] = 2; map[8][11] = 2;
 
+map[3][3] = 4; map[11][3] = 4; map[7][14] = 4;
+
 export const level1 = map;
 
 const map2 = [];
