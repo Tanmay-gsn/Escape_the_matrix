@@ -29,6 +29,7 @@ let state = {
 export function init(canvasElement) {
   state.grid = JSON.parse(JSON.stringify(level1));
   
+  state.level = 1;
   state.status = 'playing';
   state.lives = 3;
   state.score = 0;
