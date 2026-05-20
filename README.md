@@ -29,7 +29,7 @@ Our AI layer completely avoids commercial game loops, utilizing decoupled coordi
 
 ## Play Online !
 
-[Link will be updated soon, install to enjoy right now !]
+https://etm-envision.vercel.app/ Click this link and enter the matrix !
 
 ## 🛠️ Set-up Guide to install and play!
 
@@ -41,15 +41,17 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 
 ### 1. Clone the Repository using terminal
 
-````bash
+```bash
 1.   git clone https://github.com/shreyas2006-astro/Escape-the-matrix.git
 2.   cd escape-the-matrix
 3.   cd client
 4.   npm install
 5.   npm run dev
 6.   Open http://localhost:XXXX that spined up in your terminal and enter the matrix !
-````
+```
+
 ### 2. Clone the Repository using Github Desktop
+
 ```github desktop
 
 1. Open github desktop
@@ -62,4 +64,4 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
    3. npm run dev
 
 Follow link and enter the matrix !
-````
+```
