@@ -2,7 +2,7 @@ import { useState } from 'react';
 import StartScreen from './components/StartScreen';
 import GameCanvas from './components/GameCanvas';
 import EndScreen from './components/EndScreen';
-import Leaderboard from './components/Leaderboard';
+import Leaderboard from './components/LeaderBoard';
 
 function App() {
   const [screen, setScreen] = useState('start'); 
