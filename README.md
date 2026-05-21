@@ -2,7 +2,7 @@
 
 ### All-JavaScript · HTML5 Canvas · React · Node/Express · MongoDB
 
-A fast-paced, retro-arcade survival game built completely from scratch as part of the IEEE Computer Society ETM project group. Players control an astronaut who has crash-landed in a hazardous, neon-lit alien environment. The mission is to navigate the grid, manage tactical terrain, outsmart four distinct artificial intelligence algorithms, and reach the glowing quantum escape portal to secure a spot on the live, cloud-hosted leaderboard.
+A fast-paced, retro-arcade survival game built completely from scratch as part of the IEEE CompSoc Envision'26 group. Players control an astronaut who has crash-landed in a hazardous, neon-lit alien environment. The mission is to navigate the grid, manage tactical terrain, outsmart four distinct artificial intelligence algorithms, and reach the glowing quantum escape portal to secure a spot on the live, cloud-hosted leaderboard.
 
 ---
 
