@@ -1,4 +1,4 @@
-const BASE_URL = 'https://escape-the-matrix-4h02.onrender.com/api/scores';
+const BASE_URL = 'http://localhost:5000/api/scores';
 
 export async function getTopScores() {
   const response = await fetch(`${BASE_URL}`);
